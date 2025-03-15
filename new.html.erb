@@ -1,0 +1,25 @@
+<%= form_with(model: @ride, local: true) do |form| %>
+    <% if @ride.errors.any? %>
+      <div class="error-messages">
+        <h4><%= pluralize(@ride.errors.count, "error") %> prohibited this ride from being saved:</h4>
+        <ul>
+          <% @ride.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <div>
+      <%= form.label :pickup_location %>
+      <%= form.select :pickup_location, @locations, prompt: "Select Pickup Location", required: true %>
+    </div>
+  
+    <div>
+      <%= form.label :dropoff_location %>
+      <%= form.select :dropoff_location, @locations, prompt: "Select Dropoff Location", required: true %>
+    </div>
+  
+    <%= form.submit "Request Ride" %>
+  <% end %>
+  
