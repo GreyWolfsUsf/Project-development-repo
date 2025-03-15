@@ -1,24 +1,46 @@
 # app/models/ride_queue.rb
 class RideQueue
-    @queue = []
-    @mutex = Mutex.new
-  
-    def self.add(ride)
-      @mutex.synchronize do
+  @queue = []
+  @mutex = Mutex.new
+
+  def self.add(ride)
+    @mutex.synchronize do
+      begin
         @queue << ride
         process_queue
+      rescue StandardError => e
+        log_error("Error adding ride to queue: #{e.message}")
       end
     end
-  
-    def self.process_queue
-      return if @queue.empty?
+  end
+
+  def self.process_queue
+    return if @queue.empty?
+
+    ride = nil
+    @mutex.synchronize do
       ride = @queue.shift
-      ride.update(status: 'Processing')
-      notify_user(ride)
     end
-  
-    def self.notify_user(ride)
-      puts "Notification: Your ride from #{ride.pickup_location} to #{ride.dropoff_location} is now being processed."
+
+    return unless ride
+
+    begin
+      ride.update!(status: 'Processing')
+      notify_user(ride)
+    rescue StandardError => e
+      log_error("Error processing ride: #{e.message}")
     end
   end
-  
+
+  def self.notify_user(ride)
+    begin
+      puts "Notification: Your ride from #{ride.pickup_location} to #{ride.dropoff_location} is now being processed."
+    rescue StandardError => e
+      log_error("Failed to notify user: #{e.message}")
+    end
+  end
+
+  def self.log_error(message)
+    Rails.logger.error(message)  # Logs error in Rails logs
+  end
+end
