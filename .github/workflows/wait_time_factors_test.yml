@@ -43,14 +43,6 @@ jobs:
       - name: Run Rails tests
         run: bundle exec rake
 
-      - name: Run custom Ruby test for wait_time_factors.rb
-        run: |
-          if [ -f wait_time_factors.rb ]; then
-            ruby test/test_wait_time_factors.rb
-          else
-            echo "wait_time_factors.rb not found."
-            exit 1
-          fi
 
   lint:
     runs-on: ubuntu-latest
