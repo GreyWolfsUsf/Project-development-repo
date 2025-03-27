@@ -1,15 +1,12 @@
-# This workflow uses actions that are not certified by GitHub.  They are
-# provided by a third-party and are governed by separate terms of service,
-# privacy policy, and support documentation.
-#
-# This workflow will install a prebuilt Ruby version, install dependencies, and
-# run tests and linters.
-name: "Ruby on Rails CI"
+# Ruby on Rails CI + Custom Ruby File Test
+name: "FR-03 #29 – Wait Time Factor Analysis Test"
+
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feature/design-wait-time-nahid" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feature/design-wait-time-nahid" ]
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -28,39 +25,50 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      # Add or replace dependency steps here
+
       - name: Install Ruby and gems
-        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410 # v1.179.1
+        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410
         with:
           ruby-version: 3.2.2
           bundler-cache: true
-      # Add or replace database setup steps here
+
       - name: Install dependencies
         run: |
           bundle install
           bundle exec rails app:update:bin
+
       - name: Run database migrations
         run: bundle exec rails db:migrate
 
-      # Add or replace test runners here
-      - name: Run tests
+      - name: Run Rails tests
         run: bundle exec rake
+
+      - name: Run custom Ruby test for wait_time_factors.rb
+        run: |
+          if [ -f wait_time_factors.rb ]; then
+            ruby test/test_wait_time_factors.rb
+          else
+            echo "wait_time_factors.rb not found."
+            exit 1
+          fi
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install Ruby and gems
-        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410 # v1.179.1
+        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410
         with:
           ruby-version: 3.2.2
           bundler-cache: true
+
       - name: Generate binstubs
         run: bundle binstubs bundler-audit brakeman rubocop
-      # Add or replace any other lints here
+
       - name: Security audit dependencies
         run: bundle exec bundler-audit --update
+
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
-
