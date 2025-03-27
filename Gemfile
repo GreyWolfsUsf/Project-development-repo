@@ -8,6 +8,12 @@ gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+group :development, :test do
+  gem 'bundler-audit', require: false
+  gem 'brakeman', require: false
+  gem 'rubocop', require: false
+end
+
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 1.4"
 
