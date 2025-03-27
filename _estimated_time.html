@@ -1,0 +1,39 @@
+<%# app/views/ride_requests/_estimated_time.html.erb %>
+<div class="estimated-time-container">
+  <% if @estimated_time %>
+    <div class="estimated-time-details">
+      <h3>Ride Estimate</h3>
+      
+      <div class="estimate-row">
+        <strong>Distance:</strong>
+        <%= number_with_precision(@estimated_time[:distance_km], precision: 2) %> km
+      </div>
+      
+      <div class="estimate-row">
+        <strong>Estimated Driving Time:</strong>
+        <%= @estimated_time[:estimated_driving_time_minutes] %> minutes
+      </div>
+      
+      <div class="estimate-row">
+        <strong>Estimated Arrival:</strong>
+        <%= l Time.parse(@estimated_time[:estimated_arrival_time]), format: :long %>
+      </div>
+      
+      <% if @estimated_time[:estimated_driver_arrival_minutes] %>
+        <div class="estimate-row">
+          <strong>Estimated Driver Arrival:</strong>
+          <%= @estimated_time[:estimated_driver_arrival_minutes] %> minutes
+        </div>
+      <% end %>
+      
+      <div class="estimate-row">
+        <strong>Available Drivers:</strong>
+        <%= @estimated_time[:available_drivers] %>
+      </div>
+    </div>
+  <% else %>
+    <div class="no-estimate">
+      No estimated time available. Please check your location details.
+    </div>
+  <% end %>
+</div>
