@@ -39,9 +39,9 @@ jobs:
         run: |
           bundle install
           bundle exec rails app:update:bin
+      - name: Run database migrations
+        run: bundle exec rails db:migrate
 
-      - name: Set up database schema
-        run: bundle exec rails db:schema:load
       # Add or replace test runners here
       - name: Run tests
         run: bundle exec rake
