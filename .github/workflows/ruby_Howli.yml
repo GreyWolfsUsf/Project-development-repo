@@ -11,7 +11,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:11-alpine
@@ -61,6 +61,7 @@ jobs:
 
       - name: Generate binstubs
         run: bundle binstubs bundler-audit brakeman rubocop
+
 
       - name: Security audit dependencies
         run: bundle exec bundler-audit --update
