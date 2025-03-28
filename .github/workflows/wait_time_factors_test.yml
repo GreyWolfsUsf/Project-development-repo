@@ -1,5 +1,5 @@
 # Ruby on Rails CI + Custom Ruby File Test
-name: "FR-03 #29 – Wait Time Factor Analysis Test"
+name: "Ruby on Rails CI"
 
 on:
   push:
