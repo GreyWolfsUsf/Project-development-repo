@@ -51,3 +51,5 @@ RSpec.describe RideRequest, type: :model do
     end
   end
 end
+# This RSpec test suite verifies ride request status transitions, queue ordering,
+# and business rules preventing multiple active requests per user.
