@@ -20,3 +20,4 @@ class WaitTimeEstimator
     estimated_wait_time
   end
 end
+#this code should work
