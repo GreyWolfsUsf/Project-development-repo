@@ -1,9 +1,9 @@
+# config/routes.rb
 Rails.application.routes.draw do
-  # Login routes
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
-
-  # Root route
-  root 'sessions#new'
+  namespace :api do
+    namespace :v1 do
+      # Add this route for estimating ride times
+      get 'estimated_times', to: 'estimated_times#calculate'
+    end
+  end
 end
