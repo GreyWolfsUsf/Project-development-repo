@@ -1,5 +1,5 @@
 # Ruby on Rails CI + Custom Ruby File Test
-name: "Ruby on Rails CI"
+name: "Ruby on Rails"
 
 on:
   push:
