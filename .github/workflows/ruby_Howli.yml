@@ -3,6 +3,7 @@ name: "Ruby on Rails"
 
 on:
   push:
+    
     branches: [ "feature/design-queue-flow-nahid" ]
   pull_request:
     branches: [ "feature/design-queue-flow-nahid" ]
