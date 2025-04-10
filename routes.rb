@@ -5,5 +5,6 @@ Rails.application.routes.draw do
   delete 'logout', to: 'sessions#destroy'
 
   # Root route
+  
   root 'sessions#new'
 end
