@@ -3,4 +3,5 @@ USF_AUTH_API = {
   headers: {
     'Content-Type' => 'application/json'
   }
+  
 }.freeze
