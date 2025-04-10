@@ -24,7 +24,7 @@ Things you may want to cover:
 * ...
 
 Add status update – April 8
-## 📝 Status Update – USF SAFE App
+## Status Update – USF SAFE App
 
 **Progress So Far:**
 - Set up project repo and base architecture.
