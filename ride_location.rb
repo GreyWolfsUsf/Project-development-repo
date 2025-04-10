@@ -7,6 +7,7 @@ class Location < ApplicationRecord
     def self.usf_buildings
       ["Library", "MSC", "Engineering Building", "Business Building", "Rec Center"]
     end
+    
   end
   
   # app/controllers/rides_controller.rb
