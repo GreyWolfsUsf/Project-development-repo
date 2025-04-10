@@ -9,6 +9,7 @@ class SessionsController < ApplicationController
     email = params[:email]
     password = params[:password]
 
+    
     # Validate input
     if email.blank? || password.blank?
       flash[:error] = "Email and password are required."
