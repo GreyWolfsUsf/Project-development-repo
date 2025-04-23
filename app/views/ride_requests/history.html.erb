@@ -1,0 +1,68 @@
+<div class="card shadow">
+  <div class="card-header bg-success text-white">
+    <h4 class="my-2">Your Ride History</h4>
+  </div>
+  
+  <div class="card-body">
+    <% if @ride_requests.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Status</th>
+              <th>Driver</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @ride_requests.each do |ride| %>
+              <tr>
+                <td><%= ride.created_at.strftime('%b %d, %Y') %></td>
+                <td><%= ride.pickup_location.name %></td>
+                <td><%= ride.dropoff_location.name %></td>
+                <td>
+                  <span class="badge 
+                              <%= case ride.status 
+                                  when 'completed' then 'bg-success'
+                                  when 'cancelled' then 'bg-danger'
+                                  else 'bg-secondary'
+                                  end %>">
+                    <%= ride.status.titleize %>
+                  </span>
+                </td>
+                <td>
+                  <% if ride.driver %>
+                    <%= ride.driver.full_name %>
+                  <% else %>
+                    <span class="text-muted">Aga Natig</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "View", ride_request_path(ride), class: "btn btn-sm btn-outline-success" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="d-flex justify-content-center mt-4">
+        <%= paginate @ride_requests %>
+      </div>
+    <% else %>
+      <div class="alert alert-info">
+        <p class="mb-0">You don't have any completed or cancelled rides yet.</p>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="card-footer">
+    <div class="d-flex justify-content-between">
+      <%= link_to "Back", root_path, class: "btn btn-outline-secondary" %>
+      <%= link_to "Request a Ride", ride_requests_path, class: "btn btn-success" %>
+    </div>
+  </div>
+</div>

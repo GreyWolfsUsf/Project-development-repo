@@ -1,0 +1,61 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h4 class="my-2">Edit Account</h4>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @user, url: account_path, method: :patch, html: { multipart: true } do |f| %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <h5><%= pluralize(@user.errors.count, "error") %> prevented this account from being updated:</h5>
+              <ul>
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= f.label :avatar, "Profile Picture", class: "form-label" %>
+            <div class="mb-2">
+              <% if @user.avatar.attached? %>
+                <%= image_tag @user.avatar.variant(resize_to_limit: [150, 150]), class: "img-thumbnail" %>
+              <% else %>
+                <div class="text-center p-3 bg-light rounded">
+                  <i class="fas fa-user fa-3x text-secondary"></i>
+                </div>
+              <% end %>
+            </div>
+            <%= f.file_field :avatar, class: "form-control" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :phone, "Phone Number", class: "form-label" %>
+            <%= f.telephone_field :phone, class: "form-control", placeholder: "(813) 555-1234" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :password, "New Password (leave blank to keep current password)", class: "form-label" %>
+            <%= f.password_field :password, class: "form-control" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :password_confirmation, "Confirm New Password", class: "form-label" %>
+            <%= f.password_field :password_confirmation, class: "form-control" %>
+          </div>
+
+          <div class="d-grid">
+            <%= f.submit "Update Account", class: "btn btn-success" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-between">
+          <%= link_to "Back", account_path, class: "btn btn-outline-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h4 class="my-2">Create an Account</h4>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @user, url: signup_path do |f| %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <h5><%= pluralize(@user.errors.count, "error") %> prevented this account from being created:</h5>
+              <ul>
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <%= f.label :first_name, class: "form-label" %>
+              <%= f.text_field :first_name, class: "form-control", required: true %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :last_name, class: "form-label" %>
+              <%= f.text_field :last_name, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :email, "USF Email", class: "form-label" %>
+            <%= f.email_field :email, class: "form-control", placeholder: "username@usf.edu", required: true %>
+            <div class="form-text">Must be a valid USF email address (@usf.edu)</div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :u_number, "USF ID Number", class: "form-label" %>
+            <%= f.text_field :u_number, class: "form-control", placeholder: "U12345678", required: true %>
+            <div class="form-text">Enter your USF ID (starts with U followed by 8 digits)</div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :phone, "Phone Number (optional)", class: "form-label" %>
+            <%= f.telephone_field :phone, class: "form-control", placeholder: "(813) 555-1234" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :password, class: "form-label" %>
+            <%= f.password_field :password, class: "form-control", required: true, minlength: 8 %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :password_confirmation, "Confirm Password", class: "form-label" %>
+            <%= f.password_field :password_confirmation, class: "form-control", required: true, minlength: 8 %>
+          </div>
+
+          <div class="mb-3 form-check">
+            <%= check_box_tag :terms, '1', false, class: "form-check-input", required: true %>
+            <label class="form-check-label" for="terms">
+              I agree to the terms of service and privacy policy
+            </label>
+          </div>
+
+          <div class="d-grid">
+            <%= f.submit "Create Account", class: "btn btn-success" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="card-footer text-center">
+        <p class="mb-0">Already have an account? <%= link_to "Log In", login_path %></p>
+      </div>
+    </div>
+  </div>
+</div>

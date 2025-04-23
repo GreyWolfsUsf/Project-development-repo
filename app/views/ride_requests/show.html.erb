@@ -1,0 +1,183 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h4 class="my-2">
+          Ride Details
+          <span class="badge float-end 
+                      <%= case @ride_request.status 
+                          when 'pending' then 'bg-secondary'
+                          when 'accepted' then 'bg-warning text-dark'
+                          when 'in_progress' then 'bg-info'
+                          when 'completed' then 'bg-success'
+                          when 'cancelled' then 'bg-danger'
+                          end %>">
+            <%= @ride_request.status.titleize %>
+          </span>
+        </h4>
+      </div>
+      
+      <div class="card-body">
+        <!-- Request Information -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5><i class="fas fa-map-marker-alt text-success me-2"></i>Pickup Location</h5>
+            <p class="lead"><%= @ride_request.pickup_location.name %></p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-flag-checkered text-success me-2"></i>Drop-off Location</h5>
+            <p class="lead"><%= @ride_request.dropoff_location.name %></p>
+          </div>
+        </div>
+        
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5><i class="fas fa-users text-success me-2"></i>Passengers</h5>
+            <p><%= @ride_request.passengers_count %> <%= 'person'.pluralize(@ride_request.passengers_count) %></p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-clock text-success me-2"></i>Request Time</h5>
+            <p><%= @ride_request.created_at.strftime('%I:%M %p on %B %d, %Y') %></p>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5><i class="fas fa-users text-success me-2"></i>Driver</h5>
+            <p>Aga Natiq</p>
+          </div>
+          <div class="col-md-6">
+          <strong><h3><i class="fa-solid fa-taxi text-success me-2" style="text-align: center;"></i>AGA NATIQ</h3><strong>
+<%= image_tag "aga.png", alt: "Driver Name", class: "rounded-circle", style: "margin-left:45px; width: 175px; height: 175px; object-fit: cover;" %>
+          </div>
+
+        </div>
+        
+        <% if @ride_request.special_instructions.present? %>
+          <div class="mb-4">
+            <h5><i class="fas fa-info-circle text-success me-2"></i>Special Instructions</h5>
+            <p><%= @ride_request.special_instructions %></p>
+          </div>
+        <% end %>
+        
+        <!-- Status-specific information -->
+        <% case @ride_request.status %>
+        <% when 'pending' %>
+          <div class="alert alert-info">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h5 class="mb-1">Estimated Wait Time</h5>
+                <p class="mb-0">5 minutes</h5>
+              </div>
+              <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <%= button_to cancel_ride_request_path(@ride_request), method: :patch, 
+                            class: "btn btn-outline-danger", 
+                            data: { confirm: "Are you sure you want to cancel this ride?" } do %>
+                  <i class="fas fa-times me-2"></i>Cancel Ride
+                <% end %>
+              </div>
+            </div>
+          </div>
+          
+        <% when 'accepted' %>
+          <div class="alert alert-warning">
+            <h5><i class="fas fa-car-side me-2"></i>Driver is on the way</h5>
+            <p>Your driver is on the way to pick you up.</p>
+            
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle fa-4x text-success"></i>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h5 class="card-title mb-1"><%= @ride_request.driver.full_name %></h5>
+                    <p class="card-text mb-0">SAFE Team Driver</p>
+                    <p class="card-text text-muted">
+                      <small>Accepted at <%= @ride_request.accepted_at.strftime('%I:%M %p') %></small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        <% when 'in_progress' %>
+          <div class="alert alert-info">
+            <h5><i class="fas fa-check-circle me-2"></i>Driver has arrived</h5>
+            <p>Your driver is waiting at your pickup location.</p>
+            
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-circle fa-4x text-success"></i>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h5 class="card-title mb-1"><%= @ride_request.driver.full_name %></h5>
+                    <p class="card-text mb-0">SAFE Team Driver</p>
+                    <p class="card-text text-muted">
+                      <small>Arrived at <%= @ride_request.pickup_at.strftime('%I:%M %p') %></small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        <% when 'completed' %>
+          <div class="alert alert-success">
+            <h5><i class="fas fa-check-circle me-2"></i>Ride Completed</h5>
+            <p>Your ride has been completed. Thank you for using SAFE Team!</p>
+            
+            <ul class="list-group mb-3">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Requested
+                <span><%= @ride_request.created_at.strftime('%I:%M %p') %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Driver Accepted
+                <span><%= @ride_request.accepted_at.strftime('%I:%M %p') %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Picked Up
+                <span><%= @ride_request.pickup_at.strftime('%I:%M %p') %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Completed
+                <span><%= @ride_request.completed_at.strftime('%I:%M %p') %></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Total Time
+                <span><%= distance_of_time_in_words(@ride_request.created_at, @ride_request.completed_at) %></span>
+              </li>
+            </ul>
+            
+            <div class="d-grid gap-2">
+              <%= link_to "Request Another Ride", ride_requests_path, class: "btn btn-success" %>
+            </div>
+          </div>
+          
+        <% when 'cancelled' %>
+          <div class="alert alert-danger">
+            <h5><i class="fas fa-times-circle me-2"></i>Ride Cancelled</h5>
+            <p>This ride request was cancelled at <%= @ride_request.cancelled_at.strftime('%I:%M %p') %>.</p>
+            
+            <div class="d-grid gap-2">
+              <%= link_to "Request Another Ride", ride_requests_path, class: "btn btn-success" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="card-footer">
+        <div class="d-flex justify-content-between">
+          <%= link_to "Back", :back, class: "btn btn-outline-secondary" %>
+          
+          <% if @ride_request.completed? || @ride_request.cancelled? %>
+            <%= link_to "View Ride History", history_ride_requests_path, class: "btn btn-outline-success" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

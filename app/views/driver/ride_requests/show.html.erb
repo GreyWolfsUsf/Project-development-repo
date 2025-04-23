@@ -1,0 +1,163 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white">
+        <h4 class="my-2">
+          Ride Request Details
+          <span class="badge float-end 
+                      <%= case @ride_request.status 
+                          when 'pending' then 'bg-secondary'
+                          when 'accepted' then 'bg-warning text-dark'
+                          when 'in_progress' then 'bg-info'
+                          when 'completed' then 'bg-success'
+                          end %>">
+            <%= @ride_request.status.titleize %>
+          </span>
+        </h4>
+      </div>
+      
+      <div class="card-body">
+        <!-- Passenger Information -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <i class="fas fa-user-circle fa-4x text-success"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h5 class="card-title mb-1"><%= @ride_request.user.full_name %></h5>
+                <p class="card-text mb-0">USF Student</p>
+                <p class="card-text mb-0">
+                  <strong>Passengers:</strong> <%= @ride_request.passengers_count %>
+                </p>
+                <p class="card-text text-muted">
+                  <small>Requested <%= time_ago_in_words(@ride_request.created_at) %> ago</small>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver Information -->
+        <% if @ride_request.driver %>
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <% if @ride_request.driver.avatar.attached? %>
+                    <%= image_tag @ride_request.driver.avatar.variant(resize_to_limit: [80, 80]), class: "rounded-circle" %>
+                  <% else %>
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                      <i class="fas fa-user fa-3x text-secondary"></i>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h5 class="card-title mb-1"><%= @ride_request.driver.full_name %></h5>
+                  <p class="card-text mb-0">SAFE Team Driver</p>
+                  <p class="card-text text-muted">
+                    <small>
+                      <% if @ride_request.accepted? %>
+                        Accepted at <%= @ride_request.accepted_at&.strftime('%I:%M %p') %>
+                      <% elsif @ride_request.in_progress? %>
+                        Arrived at <%= @ride_request.pickup_at&.strftime('%I:%M %p') %>
+                      <% end %>
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- Request Information -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5><i class="fas fa-map-marker-alt text-success me-2"></i>Pickup Location</h5>
+            <p class="lead"><%= @ride_request.pickup_location.name %></p>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-flag-checkered text-success me-2"></i>Drop-off Location</h5>
+            <p class="lead"><%= @ride_request.dropoff_location.name %></p>
+          </div>
+        </div>
+        
+        <% if @ride_request.special_instructions.present? %>
+          <div class="alert alert-info mb-4">
+            <h5><i class="fas fa-info-circle me-2"></i>Special Instructions</h5>
+            <p class="mb-0"><%= @ride_request.special_instructions %></p>
+          </div>
+        <% end %>
+        
+        <!-- Map Preview -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h5 class="my-2">Location Preview</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="ratio ratio-16x9">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3522.471578627691!2d-82.41490252422829!3d28.06001511527542!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88c2c78760f751a1%3A0xd5b7d4845513cfc1!2sUniversity%20of%20South%20Florida!5e0!3m2!1sen!2sus!4v1691087527659!5m2!1sen!2sus" 
+                      style="border:0;" allowfullscreen="" loading="lazy" 
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Status Actions -->
+        <% case @ride_request.status %>
+        <% when 'pending' %>
+          <% unless current_user.ride_requests.where(status: [:accepted, :in_progress]).exists? %>
+            <div class="d-grid">
+              <%= button_to driver_ride_request_path(@ride_request, status: "accept"), method: :patch, class: "btn btn-success btn-lg" do %>
+                <i class="fas fa-check-circle me-2"></i>Accept This Ride
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-warning">
+              <p class="mb-0">You currently have an active ride and cannot accept additional rides until it is completed.</p>
+            </div>
+          <% end %>
+          
+        <% when 'accepted' %>
+          <% if @ride_request.driver == current_user %>
+            <div class="d-grid">
+              <%= button_to driver_ride_request_path(@ride_request, status: "pickup"), method: :patch, class: "btn btn-warning btn-lg" do %>
+                <i class="fas fa-check-circle me-2"></i>Confirm Pickup (I've Arrived)
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              <p class="mb-0">This ride has been accepted by another driver.</p>
+            </div>
+          <% end %>
+          
+        <% when 'in_progress' %>
+          <% if @ride_request.driver == current_user %>
+            <div class="d-grid">
+              <%= button_to driver_ride_request_path(@ride_request, status: "complete"), method: :patch, class: "btn btn-success btn-lg" do %>
+                <i class="fas fa-flag-checkered me-2"></i>Complete Ride
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              <p class="mb-0">This ride is being handled by another driver.</p>
+            </div>
+          <% end %>
+          
+        <% when 'completed' %>
+          <div class="alert alert-success">
+            <h5><i class="fas fa-check-circle me-2"></i>Ride Completed</h5>
+            <p class="mb-0">This ride has been completed.</p>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="card-footer">
+        <div class="d-flex justify-content-between">
+          <%= link_to "Back", :back, class: "btn btn-outline-secondary" %>
+          <%= link_to "Dashboard", driver_root_path, class: "btn btn-outline-success" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

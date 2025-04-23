@@ -1,0 +1,184 @@
+<div class="row">
+  <div class="col-lg-12 mb-4">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <h4 class="card-title">Welcome, <%= current_user.full_name %></h4>
+        <p class="card-text">You are logged in as a SAFE Team driver.</p>
+      </div>
+    </div>
+  </div>
+  <!-- In app/views/driver/dashboard/index.html.erb -->
+  <div class="card bg-success text-white mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="flex-shrink-0">
+          <% if current_user.avatar.attached? %>
+            <%= image_tag current_user.avatar.variant(resize_to_limit: [100, 100]), class: "rounded-circle border border-3 border-white" %>
+          <% else %>
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border border-3 border-white" style="width: 100px; height: 100px;">
+              <i class="fas fa-user fa-3x text-success"></i>
+            </div>
+          <% end %>
+        </div>
+        <div class="flex-grow-1 ms-3">
+          <h4 class="mb-1">Welcome, <%= current_user.full_name %></h4>
+          <p class="mb-0">You are logged in as a SAFE Team driver</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Active Ride Section -->
+  <div class="col-lg-12 mb-4">
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h5 class="my-2">Your Active Ride</h5>
+      </div>
+      <div class="card-body">
+        <% if @active_ride %>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5><i class="fas fa-user text-success me-2"></i>Passenger</h5>
+              <p class="lead"><%= @active_ride.user.full_name %></p>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-users text-success me-2"></i>Passengers Count</h5>
+              <p class="lead"><%= @active_ride.passengers_count %></p>
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5><i class="fas fa-map-marker-alt text-success me-2"></i>Pickup Location</h5>
+              <p><%= @active_ride.pickup_location.name %></p>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-flag-checkered text-success me-2"></i>Drop-off Location</h5>
+              <p><%= @active_ride.dropoff_location.name %></p>
+            </div>
+          </div>
+          
+          <% if @active_ride.special_instructions.present? %>
+            <div class="alert alert-info mb-4">
+              <h5><i class="fas fa-info-circle me-2"></i>Special Instructions</h5>
+              <p class="mb-0"><%= @active_ride.special_instructions %></p>
+            </div>
+          <% end %>
+          
+          <div class="d-grid gap-2">
+            <% if @active_ride.accepted? %>
+              <%= button_to driver_ride_request_path(@active_ride, status: "pickup"), method: :patch, class: "btn btn-warning btn-lg" do %>
+                <i class="fas fa-check-circle me-2"></i>Confirm Pickup (I've Arrived)
+              <% end %>
+            <% elsif @active_ride.in_progress? %>
+              <%= button_to driver_ride_request_path(@active_ride, status: "complete"), method: :patch, class: "btn btn-success btn-lg" do %>
+                <i class="fas fa-flag-checkered me-2"></i>Complete Ride
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="alert alert-info">
+            <p class="mb-0">You don't have any active rides at the moment. Check the pending rides section below to accept a new ride.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pending Rides Section -->
+  <div class="col-lg-12 mb-4">
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h5 class="my-2">Pending Ride Requests</h5>
+      </div>
+      <div class="card-body">
+        <% if @pending_rides.any? %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Requested At</th>
+                  <th>Passenger</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Passengers</th>
+                  <th>Wait Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @pending_rides.each do |ride| %>
+                  <tr>
+                    <td><%= time_ago_in_words(ride.created_at) %> ago</td>
+                    <td><%= ride.user.full_name %></td>
+                    <td><%= ride.pickup_location.name %></td>
+                    <td><%= ride.dropoff_location.name %></td>
+                    <td><%= ride.passengers_count %></td>
+                    <td><%= ride.estimated_wait_time %> min</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <%= link_to "View", driver_ride_request_path(ride), class: "btn btn-sm btn-outline-secondary" %>
+                        <% unless @active_ride %>
+                          <%= button_to "Accept", driver_ride_request_path(ride, status: "accept"), method: :patch, class: "btn btn-sm btn-success" %>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="alert alert-info">
+            <p class="mb-0">There are no pending ride requests at the moment.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Completed Rides Section -->
+  <div class="col-lg-12">
+    <div class="card shadow">
+      <div class="card-header bg-light">
+        <h5 class="my-2">Recently Completed Rides</h5>
+      </div>
+      <div class="card-body">
+        <% if @completed_rides.any? %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Passenger</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Passengers</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @completed_rides.each do |ride| %>
+                  <tr>
+                    <td><%= ride.completed_at.strftime('%b %d, %Y') %></td>
+                    <td><%= ride.user.full_name %></td>
+                    <td><%= ride.pickup_location.name %></td>
+                    <td><%= ride.dropoff_location.name %></td>
+                    <td><%= ride.passengers_count %></td>
+                    <td><%= distance_of_time_in_words(ride.pickup_at, ride.completed_at) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="alert alert-info">
+            <p class="mb-0">You haven't completed any rides yet.</p>
+          </div>
+        <% end %>
+      </div>
+      <div class="card-footer text-end">
+        <%= link_to "View All", driver_ride_requests_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
